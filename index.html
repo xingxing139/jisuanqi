@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>利润分解和本金计算器</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            color: #555;
+        }
+        input {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 20px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #fafafa;
+            white-space: pre-line;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>利润分解和本金计算器</h1>
+        <label for="totalProfit">输入总利润：</label>
+        <input type="number" id="totalProfit" step="1" placeholder="例如：2400">
+
+        <label for="parts">分解为几单：</label>
+        <input type="number" id="parts" step="1" placeholder="例如：4">
+
+        <label for="profitRate">利润率（%）：</label>
+        <input type="number" id="profitRate" step="1" placeholder="例如：60">
+
+        <button onclick="calculate()">计算</button>
+
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        function calculate() {
+            const totalProfit = parseInt(document.getElementById('totalProfit').value);
+            const parts = parseInt(document.getElementById('parts').value);
+            const profitRate = parseFloat(document.getElementById('profitRate').value) / 100;
+
+            if (isNaN(totalProfit) || isNaN(parts) || isNaN(profitRate) || parts <= 0 || profitRate <= 0) {
+                document.getElementById('result').innerText = '请输入有效的数字';
+                return;
+            }
+
+            const minProfit = Math.floor(totalProfit / (parts * 1.5));
+            const maxProfit = Math.ceil(totalProfit / (parts * 0.5));
+
+            let remainingProfit = totalProfit;
+            const profits = [];
+            for (let i = 0; i < parts - 1; i++) {
+                const randomProfit = Math.floor(Math.random() * (maxProfit - minProfit + 1) + minProfit);
+                profits.push(randomProfit);
+                remainingProfit -= randomProfit;
+            }
+            profits.push(remainingProfit);
+
+            if (remainingProfit < minProfit) {
+                const deficit = minProfit - remainingProfit;
+                for (let i = 0; i < profits.length - 1; i++) {
+                    if (profits[i] - deficit >= minProfit) {
+                        profits[i] -= deficit;
+                        profits[profits.length - 1] = minProfit;
+                        break;
+                    }
+                }
+            } else if (remainingProfit > maxProfit) {
+                const surplus = remainingProfit - maxProfit;
+                for (let i = 0; i < profits.length - 1; i++) {
+                    if (profits[i] + surplus <= maxProfit) {
+                        profits[i] += surplus;
+                        profits[profits.length - 1] = maxProfit;
+                        break;
+                    }
+                }
+            }
+
+            let resultText = '';
+
+            profits.forEach((profit, index) => {
+                const principal = Math.floor(profit / profitRate);
+                resultText += `单 ${index + 1}: 利润 ${profit} 本金 ${principal}\n`;
+            });
+
+            document.getElementById('result').innerText = resultText;
+        }
+    </script>
+</body>
+</html>
