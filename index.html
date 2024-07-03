@@ -67,6 +67,12 @@
             white-space: pre-line;
             color: #333;
         }
+        .up {
+            color: green;
+        }
+        .down {
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -133,10 +139,13 @@
 
             profits.forEach((profit, index) => {
                 const principal = Math.floor(profit / profitRate);
-                resultText += `单 ${index + 1}: 利润 ${profit} 本金 ${principal}\n`;
+                const isUp = Math.random() > 0.5;
+                const direction = isUp ? '上涨' : '下跌';
+                const directionClass = isUp ? 'up' : 'down';
+                resultText += `<span class="${directionClass}">单 ${index + 1}: 利润 ${profit} 本金 ${principal} (${direction})</span>\n`;
             });
 
-            document.getElementById('result').innerText = resultText;
+            document.getElementById('result').innerHTML = resultText;
         }
     </script>
 </body>
